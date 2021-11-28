@@ -1,4 +1,23 @@
-let myLibrary = [];
+const bookshelf = document.querySelector('.bookshelf');
+
+const myLibrary = {
+  books: [],
+
+  /** Adds a book to the library.
+   * @param {Book} book - the book object to add to library.
+   */
+  addBook(book) {
+    this.books.push(book);
+    const article = createArticle(book, this.books.length - 1);
+    bookshelf.appendChild(article);
+  },
+  /** Removes a book from the library by its index.
+   * @param {Number} bookIndex - index of the book to be removed.
+   */
+  removeBook(bookIndex) {
+    this.books.splice(bookIndex, 1);
+  },
+};
 
 /** Constructs the Book object that has the following fields:
  * @param {String} title - title of the book;
@@ -15,26 +34,29 @@ function Book(title, author, pageCount, yearOfPublishing, readStatus) {
   this.readStatus = readStatus;
 }
 
+/** Toggles the read state of a book.
+ * @param {Boolean} readStatus - the read status of the book.
+ */
 Book.prototype.setRead = function (readStatus) {
   this.readStatus = readStatus;
 };
 
-/** Append a book to the library.
- * @param book - the Book object
+/** Returns remove button element with a bookId property attached to it.
+ * @param {Number} bookNumber - the library book index;
+ * @returns {Element} button - the remove button element.
  */
-function addBookToLibrary(book) {
-  myLibrary.push(book);
+function createRemoveButton(bookNumber) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = 'Remove';
+
+  button.addEventListener('click', event => {
+    myLibrary.removeBook(bookNumber);
+  });
+  return button;
 }
 
-let leviathanWakes = new Book('Leviathan Wakes', 'James S.A. Corey', 577, 2011, true);
-let abaddonsGate = new Book("Abaddon's Gate", 'James S.A. Corey', 547, 2013, false);
-let cibolaBurn = new Book('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
-
-[leviathanWakes, abaddonsGate, cibolaBurn].forEach(someBook => {
-  addBookToLibrary(someBook);
-});
-
-function createArticle(book) {
+function createArticle(book, bookNumber) {
   let bookArticle = document.createElement('article');
   bookArticle.classList.add('bookshelf__book');
 
@@ -63,16 +85,11 @@ function createArticle(book) {
     bookArticle.appendChild(bookData);
   }
 
+  const removeButton = createRemoveButton(bookNumber);
+  bookArticle.appendChild(removeButton);
+
   return bookArticle;
 }
-
-const bookshelf = document.querySelector('.bookshelf');
-
-for (let someBook of myLibrary) {
-  article = createArticle(someBook);
-  bookshelf.appendChild(article);
-}
-
 
 const buttonAddNew = document.querySelector('.bookshelf__add-new');
 buttonAddNew.addEventListener('click', event => {
@@ -101,9 +118,13 @@ buttonAccept.addEventListener('click', event => {
     document.querySelector('#read-status').checked
   );
 
-  addBookToLibrary(book);
-  
-  // Add an article
-  article = createArticle(book);
-  bookshelf.appendChild(article);
+  myLibrary.addBook(book);
+});
+
+let leviathanWakes = new Book('Leviathan Wakes', 'James S.A. Corey', 577, 2011, true);
+let abaddonsGate = new Book("Abaddon's Gate", 'James S.A. Corey', 547, 2013, false);
+let cibolaBurn = new Book('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
+
+[leviathanWakes, abaddonsGate, cibolaBurn].forEach(someBook => {
+  myLibrary.addBook(someBook);
 });
