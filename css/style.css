@@ -1,0 +1,85 @@
+:root {
+  font-size: 12pt;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.bookshelf {
+  position: fixed;
+
+  top: 15%;
+  left: 50%;
+  transform: translatex(-50%);
+
+  height: 600px;
+  width: 80%;
+  max-width: 90%;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  gap: 20px;
+}
+
+.book {
+  display: flex;
+  flex-flow: column nowrap;
+
+}
+
+.bookshelf__book {
+  border: 2px solid black;
+  border-radius: 4px;
+}
+
+.book__info-entry {
+  display: flex;
+  flex-flow: row nowrap;
+  font-size: inherit;
+  gap: 15px;
+}
+
+.form-new-book {
+  position: fixed;
+  left: 50%;
+  top: 20%;
+
+  transform: translateX(-50%);
+
+  height: 250px;
+  width: 600px;
+  min-width: 400px;
+
+  z-index: 1;
+
+  background-color: peachpuff;
+
+  display: flex;
+  flex-flow: column nowrap;
+  
+  padding-left: 15px;
+  gap: 10px; 
+}
+
+.form-new-book__parameter {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.form {
+
+}
+
+.form__disabled {
+  opacity: 0;
+  z-index: -1;
+}
