@@ -1,44 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-widh, initial-scale=1.0" />
+    <title>Project: Library</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/script.js" defer></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-widh, initial-scale=1.0" />
-  <title>Project: Library</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <script src="js/script.js" defer></script>
-</head>
-
-<body>
-  <main>
-    <div class="bookshelf"></div>
-    <button type="button" class="bookshelf__add-new">New book</button>
-    <div class="form form__disabled">
-    <div class="form-new-book">
-      <div class="form-new-book__parameter">
-        <label for="title" class="form-new-book__parameter_type_label">title</label>
-        <input type="text" id="title" class="form-new-book__parameter_type_input"></input>
+  <body>
+    <main>
+      <div class="bookshelf"></div>
+      <button type="button" class="bookshelf__add-new">New book</button>
+      <div class="form form__disabled">
+        <div class="form-new-book">
+          <div class="form-new-book__parameter">
+            <label for="title" class="form-new-book__parameter_type_label">title</label>
+            <input type="text" id="title" class="form-new-book__parameter_type_input" />
+          </div>
+          <div class="form-new-book__parameter">
+            <label for="author" class="form-new-book__parameter_type_label">Author</label>
+            <input type="text" id="author" class="form-new-book__parameter_type_input" />
+          </div>
+          <div class="form-new-book__parameter">
+            <label for="page-count" class="form-new-book__parameter_type_label"
+              >Pages</label
+            >
+            <input
+              type="text"
+              id="page-count"
+              class="form-new-book__parameter_type_input"
+            />
+          </div>
+          <div class="form-new-book__parameter">
+            <label for="year" class="form-new-book__parameter_type_label">Year</label>
+            <input type="text" id="year" class="form-new-book__parameter_type_input" />
+          </div>
+          <div class="form-new-book__parameter">
+            <label for="read-status" class="form-new-book__parameter_type_label"
+              >Read</label
+            >
+            <input
+              type="checkbox"
+              id="read-status"
+              class="form-new-book__parameter_type_input"
+            />
+          </div>
+          <div class="form-new-book__controls">
+            <button
+              type="button"
+              class="form-new-book__button form-new-book__button_type_accept"
+            >
+              Accept
+            </button>
+            <button
+              type="button"
+              class="form-new-book__button form-new-book__button_type_cancel"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="form-new-book__parameter">
-        <label for="author" class="form-new-book__parameter_type_label">Author</label>
-        <input type="text" id="author" class="form-new-book__parameter_type_input"></input>
-      </div>
-      <div class="form-new-book__parameter">
-        <label for="page-count" class="form-new-book__parameter_type_label">Pages</label>
-        <input type="text" id="page-count" class="form-new-book__parameter_type_input"></input>
-      </div>
-      <div class="form-new-book__parameter">
-        <label for="year" class="form-new-book__parameter_type_label">Year</label>
-        <input type="text" id="year" class="form-new-book__parameter_type_input"></input>
-      </div>
-      <div class="form-new-book__parameter">
-        <label for="read-status" class="form-new-book__parameter_type_label">Read</label>
-        <input type="checkbox" id="read-status" class="form-new-book__parameter_type_input"></input>
-      </div>
-    </div>
-    </div>
-  </main>
-</body>
-
+    </main>
+  </body>
 </html>

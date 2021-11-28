@@ -48,20 +48,20 @@ html {
   gap: 15px;
 }
 
-.form-new-book {
+.form {
   position: fixed;
   left: 50%;
   top: 20%;
-
   transform: translateX(-50%);
+  background-color: peachpuff;
+}
 
+.form-new-book {
   height: 250px;
   width: 600px;
   min-width: 400px;
 
   z-index: 1;
-
-  background-color: peachpuff;
 
   display: flex;
   flex-flow: column nowrap;
@@ -73,10 +73,6 @@ html {
 .form-new-book__parameter {
   display: flex;
   flex-flow: row nowrap;
-}
-
-.form {
-
 }
 
 .form__disabled {
