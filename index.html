@@ -11,16 +11,32 @@
 
   <body>
     <main>
-      <div class="bookshelf"></div>
+      <div>
+        <div class="bookshelf">
+          <button
+            class="bookshelf__navigation-button" 
+          >
+            <span class="material-icons-outlined"> keyboard_arrow_up </span>
+          </button>
+          <div class="bookshelf__main-pane"></div>
+          <button
+            class="bookshelf__navigation-button"
+          >
+            <span class="material-icons-outlined"> keyboard_arrow_down </span>
+          </button>
+        </div>
+      </div>
       <button type="button" class="bookshelf__add-new">New book</button>
       <div class="form form__disabled">
         <div class="form-new-book">
           <div class="form-new-book__parameter">
-            <label for="title" class="form-new-book__parameter_type_label">title</label>
+            <label for="title" class="form-new-book__parameter_type_label">Title:</label>
             <input type="text" id="title" class="form-new-book__parameter_type_input" />
           </div>
           <div class="form-new-book__parameter">
-            <label for="author" class="form-new-book__parameter_type_label">Author</label>
+            <label for="author" class="form-new-book__parameter_type_label"
+              >Author:</label
+            >
             <input type="text" id="author" class="form-new-book__parameter_type_input" />
           </div>
           <div class="form-new-book__parameter">
@@ -34,12 +50,12 @@
             />
           </div>
           <div class="form-new-book__parameter">
-            <label for="year" class="form-new-book__parameter_type_label">Year</label>
+            <label for="year" class="form-new-book__parameter_type_label">Year:</label>
             <input type="text" id="year" class="form-new-book__parameter_type_input" />
           </div>
           <div class="form-new-book__parameter">
             <label for="read-status" class="form-new-book__parameter_type_label"
-              >Read</label
+              >Read:</label
             >
             <input
               type="checkbox"

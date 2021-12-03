@@ -1,4 +1,4 @@
-const bookshelf = document.querySelector('.bookshelf');
+const bookshelf = document.querySelector('.bookshelf__main-pane');
 
 const myLibrary = {
   books: [],
@@ -47,8 +47,15 @@ Book.prototype.setRead = function (readStatus) {
  */
 function createRemoveButton(bookNumber) {
   const button = document.createElement('button');
+
+  button.classList.add('book__button-remove');
+
+  button.style.position = 'absolute'
+  button.style.right = '15px';
+  button.style.top = '15px';
+
   button.type = 'button';
-  button.textContent = 'Remove';
+  button.innerHTML = '<span class="material-icons-outlined">delete_outline</span>';
 
   button.addEventListener('click', event => {
     myLibrary.removeBook(bookNumber);

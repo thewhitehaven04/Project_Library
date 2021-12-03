@@ -1,9 +1,14 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 :root {
   font-size: 12pt;
 }
 
 html {
   box-sizing: border-box;
+  background-color: rgb(242, 242, 242);
+
+  font-family: 'Lato', sans-serif;
 }
 
 *,
@@ -13,23 +18,33 @@ html {
 }
 
 .bookshelf {
-  position: fixed;
-
-  top: 15%;
+  position: absolute;
+  top: 25%;
   left: 50%;
   transform: translatex(-50%);
 
-  height: 600px;
-  width: 80%;
-  max-width: 90%;
+  height: 400px;
+  width: 70%;
+  max-width: 80%;
 
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-
-  gap: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
 }
 
+.bookshelf__main-pane {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.bookshelf__navigation-button {
+  all: unset;
+  text-align: center;
+  font-family: 'Material Icons';
+  font-size: 30pt;
+}
 .book {
   display: flex;
   flex-flow: column nowrap;
@@ -37,15 +52,24 @@ html {
 }
 
 .bookshelf__book {
-  border: 2px solid black;
-  border-radius: 4px;
+  position: relative;
+  
+  background-color: white;
+  box-shadow: 0px 0px 7px 2px rgb(190, 190, 190);
+  
+  border: 2px solid white;
+  border-radius: 6px;
+
+  padding: 15px;
 }
 
 .book__info-entry {
   display: flex;
   flex-flow: row nowrap;
   font-size: inherit;
+  
   gap: 15px;
+  margin: 0.4em;
 }
 
 .form {
@@ -57,7 +81,7 @@ html {
 }
 
 .form-new-book {
-  height: 250px;
+  height: 200px;
   width: 600px;
   min-width: 400px;
 
@@ -65,7 +89,8 @@ html {
 
   display: flex;
   flex-flow: column nowrap;
-  
+  justify-content: center;
+
   padding-left: 15px;
   gap: 10px; 
 }
@@ -78,4 +103,16 @@ html {
 .form__disabled {
   opacity: 0;
   z-index: -1;
+}
+
+.book__button-remove { 
+  all: unset;
+  font-family: 'Material Icons';
+  font-size: 18pt;
+
+  border-radius: 3px;
+}
+
+.book__button-remove:hover {
+  background-color: rgb(230, 230, 230);
 }
