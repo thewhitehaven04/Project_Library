@@ -17,6 +17,28 @@ html {
   box-sizing: inherit;
 }
 
+.static-header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  padding: 10px 10px;
+}
+
+.header__button {
+  padding: 5px;
+  border-radius: 5px;
+ 
+  font-family: inherit;
+  font-size: 12pt;
+  border: unset;
+
+  background-color: white;
+
+  box-shadow: 0px 0px 2px 1px rgb(190, 190, 190);
+  float: right;
+}
+
+
 .bookshelf {
   position: absolute;
   top: 25%;
@@ -115,4 +137,13 @@ html {
 
 .book__button-remove:hover {
   background-color: rgb(230, 230, 230);
+}
+
+.bookshelf__add-new {
+  all: unset;
+  border-radius: 4px;
+  border: 2px solid rgb(230, 230, 230);
+  background-color: white;
+  padding: 6px;
+
 }

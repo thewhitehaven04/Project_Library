@@ -43,14 +43,15 @@ Book.prototype.setRead = function (readStatus) {
 
 /** Returns remove button element with a bookId property attached to it.
  * @param {Number} bookNumber - the library book index;
+ * @param {Node} article - the article node
  * @returns {Element} button - the remove button element.
  */
-function createRemoveButton(bookNumber) {
+function createRemoveButton(bookNumber, article) {
   const button = document.createElement('button');
 
   button.classList.add('book__button-remove');
 
-  button.style.position = 'absolute'
+  button.style.position = 'absolute';
   button.style.right = '15px';
   button.style.top = '15px';
 
@@ -59,6 +60,8 @@ function createRemoveButton(bookNumber) {
 
   button.addEventListener('click', event => {
     myLibrary.removeBook(bookNumber);
+    const shelf = article.parentNode;
+    shelf.removeChild(article);
   });
   return button;
 }
@@ -92,16 +95,23 @@ function createArticle(book, bookNumber) {
     bookArticle.appendChild(bookData);
   }
 
-  const removeButton = createRemoveButton(bookNumber);
+  const removeButton = createRemoveButton(bookNumber, bookArticle);
   bookArticle.appendChild(removeButton);
 
   return bookArticle;
 }
 
-const buttonAddNew = document.querySelector('.bookshelf__add-new');
+const buttonAddNew = document.querySelector('.header__button_type_add-new');
+/** Implements the 'New book' button feature. */
 buttonAddNew.addEventListener('click', event => {
   const form = document.querySelector('.form');
   form.classList.remove('form__disabled');
+
+  // Cleanup input fields of the form
+  ['#title', '#author', '#page-count', '#year'].forEach(id => {
+    document.querySelector(id).textContent = '';
+  });
+  document.querySelector('#read-status').checked = false;
 });
 
 const buttonCancel = document.querySelector('.form-new-book__button_type_cancel');
@@ -126,12 +136,38 @@ buttonAccept.addEventListener('click', event => {
   );
 
   myLibrary.addBook(book);
+
+  // Cleanup input fields of the form
+  ['#title', '#author', '#page-count', '#year'].forEach(id => {
+    document.querySelector(id).textContent = '';
+  });
 });
 
+/** Initialize libary */
 let leviathanWakes = new Book('Leviathan Wakes', 'James S.A. Corey', 577, 2011, true);
+let calibansWar = new Book("Caliban's War", 'James S.A. Corey', 605, 2012, true);
 let abaddonsGate = new Book("Abaddon's Gate", 'James S.A. Corey', 547, 2013, false);
 let cibolaBurn = new Book('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
+let nemesisGames = new Book('Nemesis Games', 'James S.A. Corey', 536, 2015, false);
+let babylonsAshes = new Book("Babylon's Ashes", 'James S.A. Corey', 544, 2016, false);
+let persepolisRising = new Book(
+  'Persepolis Rising',
+  'James. S.A. Corey',
+  560,
+  2017,
+  false
+);
+let tiamatsWrath = new Book("Tiamat's Wrath", 'James. S.A. Corey', 560, 2019, false);
 
-[leviathanWakes, abaddonsGate, cibolaBurn].forEach(someBook => {
+[
+  leviathanWakes,
+  abaddonsGate,
+  calibansWar,
+  cibolaBurn,
+  nemesisGames,
+  babylonsAshes,
+  persepolisRising,
+  tiamatsWrath,
+].forEach(someBook => {
   myLibrary.addBook(someBook);
 });
