@@ -5,11 +5,11 @@ const myLibrary = {
 
   /** Adds a book to the library.
    * @param {Book} book - the book object to add to library.
+   * @returns {Number} length - the book id.
    */
   addBook(book) {
     this.books.push(book);
-    const article = createArticle(book, this.books.length - 1);
-    bookshelf.appendChild(article);
+    return this.books.length - 1;
   },
   /** Removes a book from the library by its index.
    * @param {Number} bookIndex - index of the book to be removed.
@@ -135,7 +135,12 @@ buttonAccept.addEventListener('click', event => {
     document.querySelector('#read-status').checked
   );
 
-  myLibrary.addBook(book);
+  // Put the book in the library.
+  const bookId = myLibrary.addBook(book);
+
+  // Add the book card to the shelf.
+  const article = createArticle(book, bookId);
+  bookshelf.appendChild(article);
 
   // Cleanup input fields of the form
   ['#title', '#author', '#page-count', '#year'].forEach(id => {
@@ -169,5 +174,7 @@ let tiamatsWrath = new Book("Tiamat's Wrath", 'James. S.A. Corey', 560, 2019, fa
   persepolisRising,
   tiamatsWrath,
 ].forEach(someBook => {
-  myLibrary.addBook(someBook);
+  const bookId = myLibrary.addBook(someBook);
+  const article = createArticle(someBook, bookId);
+  bookshelf.appendChild(article);
 });
