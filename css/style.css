@@ -18,10 +18,22 @@ html {
 }
 
 .static-header {
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 0px;
   padding: 10px 10px;
+
+  width: 100%;
+  background-color: blanchedalmond;
+
+  box-shadow: 0px 0px 4px 2px grey;
+
+  z-index: 1;
+}
+
+.header__title {
+  font-size: 18pt;
+  margin-left: 50px;
 }
 
 .header__button {
@@ -41,11 +53,14 @@ html {
 
 .bookshelf {
   position: absolute;
-  top: 25%;
   left: 50%;
-  transform: translatex(-50%);
+  
+  transform: translate(-50%);
+  
+  width: 70%;
+  max-width: 80%;
 
-  height: 400px;
+  height: 800px;
   width: 70%;
   max-width: 80%;
 
@@ -57,8 +72,10 @@ html {
 .bookshelf__main-pane {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 30px;
+  overflow-y: scroll;
+  padding: 5px;
 }
 
 .bookshelf__navigation-button {
@@ -67,10 +84,10 @@ html {
   font-family: 'Material Icons';
   font-size: 30pt;
 }
+
 .book {
   display: flex;
   flex-flow: column nowrap;
-
 }
 
 .bookshelf__book {
@@ -99,21 +116,21 @@ html {
   left: 50%;
   top: 20%;
   transform: translateX(-50%);
-  background-color: peachpuff;
+  background-color: blanchedalmond;
+
+  border-radius: 10px;
+  box-shadow: 0px 2px 3px 1px grey;
 }
 
 .form-new-book {
-  height: 200px;
-  width: 600px;
-  min-width: 400px;
-
+  min-width: 500px;
   z-index: 1;
 
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
 
-  padding-left: 15px;
+  padding: 30px 20px;
   gap: 10px; 
 }
 
@@ -121,6 +138,11 @@ html {
   display: flex;
   flex-flow: row nowrap;
 }
+
+.form-new-book__parameter_type_label { 
+  width: 4em;
+}
+
 
 .form__disabled {
   opacity: 0;
@@ -145,5 +167,4 @@ html {
   border: 2px solid rgb(230, 230, 230);
   background-color: white;
   padding: 6px;
-
 }

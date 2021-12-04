@@ -106,12 +106,6 @@ const buttonAddNew = document.querySelector('.header__button_type_add-new');
 buttonAddNew.addEventListener('click', event => {
   const form = document.querySelector('.form');
   form.classList.remove('form__disabled');
-
-  // Cleanup input fields of the form
-  ['#title', '#author', '#page-count', '#year'].forEach(id => {
-    document.querySelector(id).textContent = '';
-  });
-  document.querySelector('#read-status').checked = false;
 });
 
 const buttonCancel = document.querySelector('.form-new-book__button_type_cancel');
@@ -121,7 +115,7 @@ buttonCancel.addEventListener('click', event => {
 
   // Cleanup input fields of the form
   ['#title', '#author', '#page-count', '#year'].forEach(id => {
-    document.querySelector(id).textContent = '';
+    document.querySelector(id).value = '';
   });
   document.querySelector('#read-status').checked = false;
 });
@@ -144,8 +138,9 @@ buttonAccept.addEventListener('click', event => {
 
   // Cleanup input fields of the form
   ['#title', '#author', '#page-count', '#year'].forEach(id => {
-    document.querySelector(id).textContent = '';
+    document.querySelector(id).value = '';
   });
+  document.querySelector('#read-status').checked = false;
 });
 
 /** Initialize libary */
