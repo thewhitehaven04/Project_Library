@@ -27,6 +27,10 @@ class LibraryModel extends Observable {
     });
   }
 
+  toggleReadStatus(bookId) {
+    this.books.find((book) => book.id == bookId).toggleReadStatus();
+  }
+
   _getBookById(bookId) {
     return this.books.find((book) => book.id == bookId);
   }
@@ -45,9 +49,11 @@ class LibraryModel extends Observable {
 }
 
 class LibraryController {
-  constructor(view, model) {
-    this.libraryView = view;
+  constructor(libraryView, addFormView, model) {
+    this.libraryView = libraryView;
     this.libraryView.setupRemoveHandler(this.removeBook);
+
+    this.addFormView = addFormView;
 
     this.libraryModel = model;
     this.libraryModel.subscribe(this.libraryView.updateDispatch);
@@ -69,6 +75,7 @@ class LibraryView {
     this.bookClass = 'bookshelf__book';
     this.bookAttributeClass = 'book__attribute';
     this.bookRemoveButtonClass = 'book__button-remove';
+    this.readStateToggleClass = 'book__button-read-toggle';
   }
 
   setupRemoveHandler(removeHandler) {
@@ -79,8 +86,16 @@ class LibraryView {
     });
   }
 
-  _getBookId(button) {
-    return button.dataset.id;
+  setupToggleHandler(toggleHandler) {
+    this.libraryContainer.addEventListener('click', (event) => {
+      toggleHandler(
+        this._getBookId(event.target.closest(`.${this.readStateToggleClass}`)),
+      );
+    });
+  }
+
+  _getBookId(element) {
+    return element.dataset.id;
   }
 
   /** Implements reactions to events received from the model.
@@ -99,9 +114,11 @@ class LibraryView {
 
   addBook(book) {
     const rootArticle = this._setupArticle(book);
+    const toggleRead = this._setupToggle(book.id);
     const removeButton = this._setupButton(book.id);
 
     rootArticle.appendChild(removeButton);
+    rootArticle.appendChild(toggleRead);
     this.libraryContainer.appendChild(rootArticle);
   }
 
@@ -117,36 +134,61 @@ class LibraryView {
     const rootArticle = document.createElement('article');
     rootArticle.classList.add(this.bookClass);
 
-    for (let key in book)
-      rootArticle.appendChild(this._renderKeyValuePair(key, book[key]));
-
+    const bookJson = book.toJSON();
+    for (let key in bookJson) {
+      const div = this._renderKeyValuePair(key, bookJson[key]);
+      if (div) rootArticle.appendChild(div);
+    }
     rootArticle.setAttribute('id', `${book.id}`);
     return rootArticle;
   }
 
-  _renderKeyValuePair(bookParameter, bookValue) {
-    const div = document.createElement('div');
-    div.classList.add(this.bookAttributeClass);
+  /** Displays text fields.
+   * @param {String} bookKey - the attribute name of the Book's instance JSON representation
+   * @parma {String} bookValue - the value
+   */
+  _renderKeyValuePair(bookKey, bookValue) {
+    const keyToDisplayMapper = {
+      title: 'Title',
+      author: 'Author',
+      pageCount: 'Pages',
+      yearOfPublishing: 'Year',
+    };
 
-    const spanKey = document.createElement('span');
-    spanKey.textContent = `${bookParameter}:`;
+    // Handles only text fields. Read status checkbox is handled in another method.
+    if (bookKey in keyToDisplayMapper) {
+      const div = document.createElement('div');
+      div.classList.add(this.bookAttributeClass);
 
-    const spanValue = document.createElement('span');
-    spanKey.textContent = `${bookValue}`;
+      const spanKey = document.createElement('span');
+      spanKey.textContent = `${keyToDisplayMapper[bookKey]}:`;
 
-    div.appendChild(spanKey);
-    div.appendChild(spanValue);
-    return div;
+      const spanValue = document.createElement('span');
+      spanValue.textContent = `${bookValue}`;
+
+      div.appendChild(spanKey);
+      div.appendChild(spanValue);
+      return div;
+    }
   }
 
   _setupButton(bookId) {
     const button = document.createElement('button');
     button.innerHTML = '<span class="material-icons-outlined">delete</span>';
     button.dataset.id = bookId;
-
     button.classList.add(this.bookRemoveButtonClass);
 
     return button;
+  }
+
+  _setupToggle(bookId) {
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.dataset.id = bookId;
+    input.id = `book-${bookId}`;
+    input.classList.add(this.readStateToggleClass);
+
+    return input;
   }
 }
 
@@ -172,6 +214,10 @@ class Book {
     this.readStatus = readStatus;
   }
 
+  toggleReadStatus = () => {
+    this.readStatus = !this.readStatus;
+  };
+
   get id() {
     return this.#id;
   }
@@ -181,9 +227,50 @@ class Book {
       title: this.title,
       author: this.author,
       pageCount: this.pageCount,
-      year: this.yearOfPublishing,
+      yearOfPublishing: this.yearOfPublishing,
       status: this.readStatus,
     };
+  }
+}
+
+class AddBookFormView {
+  constructor() {
+    this.newBookFormButton = document.querySelector(
+      '.header__button_type_add-new',
+    );
+
+    this.newBookForm = document.querySelector('.form');
+    this.newBookFormDisabledClass = 'form__disabled';
+    this.newBookFormEnabled = false;
+
+    this._newFormOpenerInit(this.newBookFormButton);
+
+    this.newBookFormFields = {
+      title: document.querySelector('#title'),
+      author: document.querySelector('#author'),
+      pages: document.querySelector('#page-count'),
+      year: document.querySelector('#year'),
+      status: document.querySelector('#read-status'),
+    };
+  }
+
+  _newFormOpenerInit(button) {
+    button.addEventListener('click', () => {
+      this.newBookForm.classList.remove(this.newBookFormDisabledClass);
+    });
+  }
+
+  acceptHandler() {}
+
+  _cleanFields() {
+    for (field of this.newBookFormFields) {
+      field.value = '';
+    }
+  }
+
+  cancelHandler() {
+    this._cleanFields();
+    this.newBookForm.classList.add(this.newBookFormDisabledClass);
   }
 }
 
@@ -247,6 +334,7 @@ let leviathanFalls = new Book(
 
 const libraryController = new LibraryController(
   new LibraryView(),
+  new AddBookFormView(),
   new LibraryModel(),
 );
 
