@@ -35,23 +35,27 @@ class LibraryModel extends Observable {
 }
 
 class LibraryController {
-  constructor(libraryView, addFormView, model) {
+  constructor(libraryView, addFormView, model, factory) {
     this.libraryView = libraryView;
     this.libraryView.setupRemoveHandler(this.removeBook);
 
     this.addFormView = addFormView;
+    this.addFormView.acceptButtonHandler(this.addBook);
 
     this.libraryModel = model;
     this.libraryModel.subscribe(this.libraryView.updateDispatch);
+
+    this.bookFactory = factory;
   }
 
-  addBook(book) {
+  addBook = (title, author, pageCount, yearOfPublishing, status) => {
+    const book = this.bookFactory.createNewBook(title, author, pageCount, yearOfPublishing, status);
     this.libraryModel.addBook(book);
-  }
+  };
 
   removeBook = (book) => {
     this.libraryModel.removeBook(book);
-  }
+  };
 }
 
 class LibraryView {
@@ -254,6 +258,11 @@ class AddBookFormView {
       year: document.querySelector('#year'),
       status: document.querySelector('#read-status'),
     };
+
+    this.acceptButton = document.querySelector('.form-new-book__button_type_accept');
+
+    this.cancelButton = document.querySelector('.form-new-book__button_type_cancel');
+    this.cancelButton.addEventListener('click', (event) => this.cancelHandler());
   }
 
   _newFormOpenerInit(button) {
@@ -262,11 +271,20 @@ class AddBookFormView {
     });
   }
 
-  acceptHandler() {}
+  acceptButtonHandler(addBook) {
+    this.acceptButton.addEventListener('click', (event) => {
+      const title = this.newBookFormFields['title'].value;
+      const author = this.newBookFormFields['author'].value;
+      const pages = this.newBookFormFields['pages'].value;
+      const year = this.newBookFormFields['year'].value;
+      const status = this.newBookFormFields['status'].value;
+      addBook(title, author, pages, year, status);
+    });
+  }
 
   _cleanFields() {
-    for (field of this.newBookFormFields) {
-      field.value = '';
+    for (let field in this.newBookFormFields) {
+      this.newBookFormFields[field].value = '';
     }
   }
 
@@ -277,18 +295,22 @@ class AddBookFormView {
 }
 
 const bookFactoryController = new BookFactoryController(BookView, BookModel);
+const libraryController = new LibraryController(
+  new LibraryView(),
+  new AddBookFormView(),
+  new LibraryModel(),
+  new BookFactoryController(BookView, BookModel),
+);
 
-let leviathanWakes = bookFactoryController.createNewBook('Leviathan Wakes', 'James S.A. Corey', 577, 2011, true);
-let calibansWar = bookFactoryController.createNewBook("Caliban's War", 'James S.A. Corey', 605, 2012, true);
-let abaddonsGate = bookFactoryController.createNewBook("Abaddon's Gate", 'James S.A. Corey', 547, 2013, false);
-let cibolaBurn = bookFactoryController.createNewBook('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
-let nemesisGames = bookFactoryController.createNewBook('Nemesis Games', 'James S.A. Corey', 536, 2015, false);
-let babylonsAshes = bookFactoryController.createNewBook("Babylon's Ashes", 'James S.A. Corey', 544, 2016, false);
-let persepolisRising = bookFactoryController.createNewBook('Persepolis Rising', 'James. S.A. Corey', 560, 2017, false);
-let tiamatsWrath = bookFactoryController.createNewBook("Tiamat's Wrath", 'James. S.A. Corey', 560, 2019, false);
-let leviathanFalls = bookFactoryController.createNewBook('Leviathan Falls', 'James S.A. Corey', 518, 2021, false);
-
-const libraryController = new LibraryController(new LibraryView(), new AddBookFormView(), new LibraryModel());
+let leviathanWakes = libraryController.addBook('Leviathan Wakes', 'James S.A. Corey', 577, 2011, true);
+let calibansWar = libraryController.addBook("Caliban's War", 'James S.A. Corey', 605, 2012, true);
+let abaddonsGate = libraryController.addBook("Abaddon's Gate", 'James S.A. Corey', 547, 2013, false);
+let cibolaBurn = libraryController.addBook('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
+let nemesisGames = libraryController.addBook('Nemesis Games', 'James S.A. Corey', 536, 2015, false);
+let babylonsAshes = libraryController.addBook("Babylon's Ashes", 'James S.A. Corey', 544, 2016, false);
+let persepolisRising = libraryController.addBook('Persepolis Rising', 'James. S.A. Corey', 560, 2017, false);
+let tiamatsWrath = libraryController.addBook("Tiamat's Wrath", 'James. S.A. Corey', 560, 2019, false);
+let leviathanFalls = libraryController.addBook('Leviathan Falls', 'James S.A. Corey', 518, 2021, false);
 
 [
   leviathanWakes,
