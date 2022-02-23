@@ -1,50 +1,36 @@
 class Observable {
   #observers = [];
 
+  /** Add an object to observers. */
   subscribe(observer) {
     this.#observers.push(observer);
   }
 
   notify(data) {
-    for (let observer of this.#observers) {
-      observer(data);
-    }
+    for (let observer of this.#observers) observer(data);
   }
 }
 class LibraryModel extends Observable {
   /** Stores objects of the Book class. */
   books = [];
+  nextBookId = 0;
 
   /** Adds a book to the library.
    * @param {Book} book - the book object to add to library.
    * @returns {Number} length - the book id.
    */
   addBook(book) {
-    this.books.push(book);
-    this.notify({
-      event: 'add',
-      obj: book,
-    });
-  }
-
-  toggleReadStatus(bookId) {
-    this.books.find((book) => book.id == bookId).toggleReadStatus();
-  }
-
-  _getBookById(bookId) {
-    return this.books.find((book) => book.id == bookId);
+    this.books.push({ id: this.nextBookId, book });
+    this.notify({ event: 'add', obj: book });
+    this.nextBookId++;
   }
 
   /** Removes a book from the library by its index.
    * @param {Book} book - index of the book to be removed.
    */
-  removeBookById(bookId) {
-    const book = this._getBookById(bookId);
-    this.books.filter((libraryBook) => libraryBook == book);
-    this.notify({
-      event: 'remove',
-      obj: book,
-    });
+  removeBook(book) {
+    this.books.filter((libraryBook) => libraryBook != book);
+    this.notify({ event: 'remove', obj: book });
   }
 }
 
@@ -63,38 +49,30 @@ class LibraryController {
     this.libraryModel.addBook(book);
   }
 
-  removeBook = (bookId) => {
-    this.libraryModel.removeBookById(bookId);
-  };
+  removeBook = (book) => {
+    this.libraryModel.removeBook(book);
+  }
 }
 
 class LibraryView {
   constructor() {
     this.libraryContainer = document.querySelector('.bookshelf__main-pane');
-
-    this.bookClass = 'bookshelf__book';
-    this.bookAttributeClass = 'book__attribute';
     this.bookRemoveButtonClass = 'book__button-remove';
-    this.readStateToggleClass = 'book__button-read-toggle';
   }
 
   setupRemoveHandler(removeHandler) {
     this.libraryContainer.addEventListener('click', (event) => {
-      removeHandler(
-        this._getBookId(event.target.closest(`.${this.bookRemoveButtonClass}`)),
-      );
+      removeHandler(event.target.closest(`.${this.bookRemoveButtonClass}`).parentElement);
     });
   }
 
   setupToggleHandler(toggleHandler) {
     this.libraryContainer.addEventListener('click', (event) => {
-      toggleHandler(
-        this._getBookId(event.target.closest(`.${this.readStateToggleClass}`)),
-      );
+      toggleHandler(this.#getBookId(event.target.closest(`.${this.readStateToggleClass}`)));
     });
   }
 
-  _getBookId(element) {
+  #getBookId(element) {
     return element.dataset.id;
   }
 
@@ -113,82 +91,21 @@ class LibraryView {
   };
 
   addBook(book) {
-    const rootArticle = this._setupArticle(book);
-    const toggleRead = this._setupToggle(book.id);
-    const removeButton = this._setupButton(book.id);
-
-    rootArticle.appendChild(removeButton);
-    rootArticle.appendChild(toggleRead);
-    this.libraryContainer.appendChild(rootArticle);
+    const renderedBook = book.render();
+    this.#addRemoveButtonToBook(renderedBook);
+    this.libraryContainer.appendChild(renderedBook);
   }
 
   removeBook(book) {
-    this.libraryContainer.removeChild(this._getBookFromDOM(book));
+    this.libraryContainer.removeChild(book);
   }
 
-  _getBookFromDOM(book) {
-    return this.libraryContainer.querySelector(`#${book.id}`);
-  }
-
-  _setupArticle(book) {
-    const rootArticle = document.createElement('article');
-    rootArticle.classList.add(this.bookClass);
-
-    const bookJson = book.toJSON();
-    for (let key in bookJson) {
-      const div = this._renderKeyValuePair(key, bookJson[key]);
-      if (div) rootArticle.appendChild(div);
-    }
-    rootArticle.setAttribute('id', `${book.id}`);
-    return rootArticle;
-  }
-
-  /** Displays text fields.
-   * @param {String} bookKey - the attribute name of the Book's instance JSON representation
-   * @parma {String} bookValue - the value
-   */
-  _renderKeyValuePair(bookKey, bookValue) {
-    const keyToDisplayMapper = {
-      title: 'Title',
-      author: 'Author',
-      pageCount: 'Pages',
-      yearOfPublishing: 'Year',
-    };
-
-    // Handles only text fields. Read status checkbox is handled in another method.
-    if (bookKey in keyToDisplayMapper) {
-      const div = document.createElement('div');
-      div.classList.add(this.bookAttributeClass);
-
-      const spanKey = document.createElement('span');
-      spanKey.textContent = `${keyToDisplayMapper[bookKey]}:`;
-
-      const spanValue = document.createElement('span');
-      spanValue.textContent = `${bookValue}`;
-
-      div.appendChild(spanKey);
-      div.appendChild(spanValue);
-      return div;
-    }
-  }
-
-  _setupButton(bookId) {
+  #addRemoveButtonToBook(bookElement) {
     const button = document.createElement('button');
     button.innerHTML = '<span class="material-icons-outlined">delete</span>';
-    button.dataset.id = bookId;
     button.classList.add(this.bookRemoveButtonClass);
 
-    return button;
-  }
-
-  _setupToggle(bookId) {
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.dataset.id = bookId;
-    input.id = `book-${bookId}`;
-    input.classList.add(this.readStateToggleClass);
-
-    return input;
+    bookElement.appendChild(button);
   }
 }
 
@@ -199,13 +116,29 @@ class LibraryView {
  * @param {Number} yearOfPublishing - the number of pages in the book;
  * @param {Boolean} readStatus - whether the book has been read.
  */
-class Book {
-  static nextBookId = 0;
-  #id;
+class BookFactoryController {
+  constructor(view, model) {
+    this.view = view;
+    this.model = model;
+  }
 
+  /** Returns a new book object that contains the 'render' method. */
+  createNewBook(title, author, pageCount, yearOfPublishing, readStatus) {
+    const bookModel = new this.model(title, author, pageCount, yearOfPublishing, readStatus);
+
+    const handleToggle = () => bookModel.toggleReadStatus();
+    const bookView = new this.view(bookModel.toJSON(), handleToggle);
+
+    bookModel.subscribe(bookView.toggleReadStatus);
+
+    const render = () => bookView.render();
+    return { render };
+  }
+}
+
+class BookModel extends Observable {
   constructor(title, author, pageCount, yearOfPublishing, readStatus) {
-    this.#id = `book-id-${Book.nextBookId}`;
-    Book.nextBookId++;
+    super();
 
     this.title = title;
     this.author = author;
@@ -218,10 +151,6 @@ class Book {
     this.readStatus = !this.readStatus;
   };
 
-  get id() {
-    return this.#id;
-  }
-
   toJSON() {
     return {
       title: this.title,
@@ -233,11 +162,84 @@ class Book {
   }
 }
 
+/** Displays the book with its attributes and toggles. */
+class BookView {
+  constructor(bookJSON, toggleEventHandler) {
+    this.bookClass = 'bookshelf__book';
+    this.rootElement = document.createElement('article');
+    this.rootElement.classList.add(this.bookClass);
+
+    // Appends text fields
+    this.bookAttributeClass = 'book__attribute';
+    this.#setupTextFields(bookJSON).forEach((textField) => this.rootElement.appendChild(textField));
+
+    // Appends status toggle
+    this.readStateToggleClass = 'book__button-read-toggle';
+
+    // Attaches an event handler that binds the book's read status to the value of its model.
+    this.toggleStatusInput = this.#setupReadStatus(bookJSON);
+    this.toggleStatusInput.addEventListener('click', (event) => {
+      toggleEventHandler();
+    });
+    this.rootElement.appendChild(this.toggleStatusInput);
+  }
+
+  /** Renders the book's text attributes (year of publishing, title, author, etc.)
+   * @param {String} bookKey - an attribute;
+   * @param {String} value - attribute's value
+   *
+   * @returns {Node} div
+   */
+  _renderBookAttribute(bookKey, bookValue) {
+    const div = document.createElement('div');
+    div.classList.add(this.bookAttributeClass);
+
+    const spanKey = document.createElement('span');
+    spanKey.textContent = `${bookKey}:`;
+
+    const spanValue = document.createElement('span');
+    spanValue.textContent = bookValue;
+
+    div.appendChild(spanKey);
+    div.appendChild(spanValue);
+    return div;
+  }
+
+  #setupTextFields(bookJson) {
+    const textFieldsMapper = {
+      title: 'Title',
+      author: 'Author',
+      pageCount: 'Page count',
+      yearOfPublishing: 'Year of publishing',
+    };
+
+    const bookAttributeElements = [];
+    for (const [key, value] of Object.entries(bookJson)) {
+      if (Object.keys(textFieldsMapper).includes(key)) {
+        bookAttributeElements.push(this._renderBookAttribute(textFieldsMapper[key], value));
+      }
+    }
+    return bookAttributeElements;
+  }
+
+  #setupReadStatus(bookJson) {
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = bookJson['status'];
+    input.classList.add(this.readStateToggleClass);
+
+    return input;
+  }
+
+  toggleReadStatus = () => {
+    !this.toggleStatusInput.checked;
+  };
+  render = () => this.rootElement;
+}
+
 class AddBookFormView {
   constructor() {
-    this.newBookFormButton = document.querySelector(
-      '.header__button_type_add-new',
-    );
+    this.newBookFormButton = document.querySelector('.header__button_type_add-new');
 
     this.newBookForm = document.querySelector('.form');
     this.newBookFormDisabledClass = 'form__disabled';
@@ -274,69 +276,19 @@ class AddBookFormView {
   }
 }
 
-let leviathanWakes = new Book(
-  'Leviathan Wakes',
-  'James S.A. Corey',
-  577,
-  2011,
-  true,
-);
-let calibansWar = new Book(
-  "Caliban's War",
-  'James S.A. Corey',
-  605,
-  2012,
-  true,
-);
-let abaddonsGate = new Book(
-  "Abaddon's Gate",
-  'James S.A. Corey',
-  547,
-  2013,
-  false,
-);
-let cibolaBurn = new Book('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
-let nemesisGames = new Book(
-  'Nemesis Games',
-  'James S.A. Corey',
-  536,
-  2015,
-  false,
-);
-let babylonsAshes = new Book(
-  "Babylon's Ashes",
-  'James S.A. Corey',
-  544,
-  2016,
-  false,
-);
-let persepolisRising = new Book(
-  'Persepolis Rising',
-  'James. S.A. Corey',
-  560,
-  2017,
-  false,
-);
-let tiamatsWrath = new Book(
-  "Tiamat's Wrath",
-  'James. S.A. Corey',
-  560,
-  2019,
-  false,
-);
-let leviathanFalls = new Book(
-  'Leviathan Falls',
-  'James S.A. Corey',
-  518,
-  2021,
-  false,
-);
+const bookFactoryController = new BookFactoryController(BookView, BookModel);
 
-const libraryController = new LibraryController(
-  new LibraryView(),
-  new AddBookFormView(),
-  new LibraryModel(),
-);
+let leviathanWakes = bookFactoryController.createNewBook('Leviathan Wakes', 'James S.A. Corey', 577, 2011, true);
+let calibansWar = bookFactoryController.createNewBook("Caliban's War", 'James S.A. Corey', 605, 2012, true);
+let abaddonsGate = bookFactoryController.createNewBook("Abaddon's Gate", 'James S.A. Corey', 547, 2013, false);
+let cibolaBurn = bookFactoryController.createNewBook('Cibola Burn', 'James S.A. Corey', 591, 2014, false);
+let nemesisGames = bookFactoryController.createNewBook('Nemesis Games', 'James S.A. Corey', 536, 2015, false);
+let babylonsAshes = bookFactoryController.createNewBook("Babylon's Ashes", 'James S.A. Corey', 544, 2016, false);
+let persepolisRising = bookFactoryController.createNewBook('Persepolis Rising', 'James. S.A. Corey', 560, 2017, false);
+let tiamatsWrath = bookFactoryController.createNewBook("Tiamat's Wrath", 'James. S.A. Corey', 560, 2019, false);
+let leviathanFalls = bookFactoryController.createNewBook('Leviathan Falls', 'James S.A. Corey', 518, 2021, false);
+
+const libraryController = new LibraryController(new LibraryView(), new AddBookFormView(), new LibraryModel());
 
 [
   leviathanWakes,
