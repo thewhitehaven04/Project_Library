@@ -64,20 +64,11 @@ class LibraryView {
     this.bookRemoveButtonClass = 'book__button-remove';
   }
 
+  /** Sets up book removal handler. Accepts controller book removal handler as the parameter. */
   setupRemoveHandler(removeHandler) {
     this.libraryContainer.addEventListener('click', (event) => {
       removeHandler(event.target.closest(`.${this.bookRemoveButtonClass}`).parentElement);
     });
-  }
-
-  setupToggleHandler(toggleHandler) {
-    this.libraryContainer.addEventListener('click', (event) => {
-      toggleHandler(this.#getBookId(event.target.closest(`.${this.readStateToggleClass}`)));
-    });
-  }
-
-  #getBookId(element) {
-    return element.dataset.id;
   }
 
   /** Implements reactions to events received from the model.
@@ -150,7 +141,8 @@ class BookModel extends Observable {
     this.yearOfPublishing = yearOfPublishing;
     this.readStatus = readStatus;
   }
-
+  
+  /** Toggles */
   toggleReadStatus = () => {
     this.readStatus = !this.readStatus;
   };
@@ -271,23 +263,28 @@ class AddBookFormView {
     });
   }
 
+  /** Reads values from the form aand passes them as arguments into the addBook handler
+   * @param {Function} addBook - controller function to call when adding the new book
+   */
   acceptButtonHandler(addBook) {
-    this.acceptButton.addEventListener('click', (event) => {
+    this.acceptButton.addEventListener('click', (event) => { 
       const title = this.newBookFormFields['title'].value;
       const author = this.newBookFormFields['author'].value;
       const pages = this.newBookFormFields['pages'].value;
       const year = this.newBookFormFields['year'].value;
-      const status = this.newBookFormFields['status'].value;
+      const status = this.newBookFormFields['status'].checked;
       addBook(title, author, pages, year, status);
     });
   }
 
+  /** Helper function that cleans input fields of the form. */
   _cleanFields() {
     for (let field in this.newBookFormFields) {
       this.newBookFormFields[field].value = '';
     }
   }
-
+  
+  /** Hides the book addition input form. */
   cancelHandler() {
     this._cleanFields();
     this.newBookForm.classList.add(this.newBookFormDisabledClass);
@@ -311,17 +308,3 @@ let babylonsAshes = libraryController.addBook("Babylon's Ashes", 'James S.A. Cor
 let persepolisRising = libraryController.addBook('Persepolis Rising', 'James. S.A. Corey', 560, 2017, false);
 let tiamatsWrath = libraryController.addBook("Tiamat's Wrath", 'James. S.A. Corey', 560, 2019, false);
 let leviathanFalls = libraryController.addBook('Leviathan Falls', 'James S.A. Corey', 518, 2021, false);
-
-[
-  leviathanWakes,
-  calibansWar,
-  abaddonsGate,
-  cibolaBurn,
-  nemesisGames,
-  babylonsAshes,
-  persepolisRising,
-  tiamatsWrath,
-  leviathanFalls,
-].forEach((someBook) => {
-  libraryController.addBook(someBook);
-});
