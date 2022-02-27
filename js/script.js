@@ -67,7 +67,8 @@ class LibraryView {
   /** Sets up book removal handler. Accepts controller book removal handler as the parameter. */
   setupRemoveHandler(removeHandler) {
     this.libraryContainer.addEventListener('click', (event) => {
-      removeHandler(event.target.closest(`.${this.bookRemoveButtonClass}`).parentElement);
+      const closest = event.target.closest(`.${this.bookRemoveButtonClass}`).parentElement;
+      removeHandler(closest);
     });
   }
 
@@ -141,10 +142,11 @@ class BookModel extends Observable {
     this.yearOfPublishing = yearOfPublishing;
     this.readStatus = readStatus;
   }
-  
+
   /** Toggles */
   toggleReadStatus = () => {
     this.readStatus = !this.readStatus;
+    this.notify(this.readStatus);
   };
 
   toJSON() {
@@ -161,6 +163,7 @@ class BookModel extends Observable {
 /** Displays the book with its attributes and toggles. */
 class BookView {
   constructor(bookJSON, toggleEventHandler) {
+    // Constructs the root element of the book
     this.bookClass = 'bookshelf__book';
     this.rootElement = document.createElement('article');
     this.rootElement.classList.add(this.bookClass);
@@ -170,19 +173,32 @@ class BookView {
     this.#setupTextFields(bookJSON).forEach((textField) => this.rootElement.appendChild(textField));
 
     // Appends status toggle
-    this.readStateToggleClass = 'book__button-read-toggle';
+    this.readStateButtonClass = 'book__button_read-button';
+    this.readStateLabelClass = 'book__button_read-label';
+    this.activeToggleClass = 'book__button_read-label_active';
+
+    this.readLabel = '<span class="material-icons-outlined">done</span>';
+    this.notReadLabel = '<span class="material-icons-outlined">close</span>';
+
 
     // Attaches an event handler that binds the book's read status to the value of its model.
-    this.toggleStatusInput = this.#setupReadStatus(bookJSON);
-    this.toggleStatusInput.addEventListener('click', (event) => {
-      toggleEventHandler();
+    this.readEventHandler = toggleEventHandler;
+    this.toggleStatusLabel = this.#attachReadStatus(bookJSON['status'], toggleEventHandler);
+    this.rootElement.appendChild(this.toggleStatusLabel);
+  }
+
+  #attachReadStatus(status, eventHandler) {
+    const div = this.#setupReadStatus(status);
+    div.addEventListener('click', (event) => {
+      event.stopPropagation();
+      eventHandler();
     });
-    this.rootElement.appendChild(this.toggleStatusInput);
+    return div;
   }
 
   /** Renders the book's text attributes (year of publishing, title, author, etc.)
    * @param {String} bookKey - an attribute;
-   * @param {String} value - attribute's value
+   * @param {String} value - the attribute's value
    *
    * @returns {Node} div
    */
@@ -191,9 +207,11 @@ class BookView {
     div.classList.add(this.bookAttributeClass);
 
     const spanKey = document.createElement('span');
+    spanKey.classList.add('book__attribute_type-key');
     spanKey.textContent = `${bookKey}:`;
 
     const spanValue = document.createElement('span');
+    spanValue.classList.add('book__attribute_type-value');
     spanValue.textContent = bookValue;
 
     div.appendChild(spanKey);
@@ -201,11 +219,12 @@ class BookView {
     return div;
   }
 
+  /** Sets up the book's text attributes. */
   #setupTextFields(bookJson) {
     const textFieldsMapper = {
       title: 'Title',
       author: 'Author',
-      pageCount: 'Page count',
+      pageCount: 'Pages',
       yearOfPublishing: 'Year of publishing',
     };
 
@@ -218,17 +237,37 @@ class BookView {
     return bookAttributeElements;
   }
 
-  #setupReadStatus(bookJson) {
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.checked = bookJson['status'];
-    input.classList.add(this.readStateToggleClass);
+  /** Sets up the read status checkbox of the book card. */
+  #setupReadStatus(status) {
+    const divRoot = document.createElement('div');
+    divRoot.classList.add('book__button_read');
 
-    return input;
+    const button = document.createElement('button');
+    button.classList.add(this.readStateButtonClass);
+
+    if (status == true) {
+      button.innerHTML = this.readLabel;
+      button.style.setProperty('color', 'green');
+    } else {
+      button.innerHTML = this.notReadLabel;
+      button.style.setProperty('color', 'red');
+    }
+
+    const label = document.createElement('label');
+    label.classList.add(this.readStateLabelClass);
+    label.textContent = 'Read: ';
+
+    divRoot.appendChild(label);
+    divRoot.appendChild(button);
+    return divRoot;
   }
 
-  toggleReadStatus = () => {
-    !this.toggleStatusInput.checked;
+  /** Toggles the read status to the opposite one upon receiving
+   * the event from the model. */
+  toggleReadStatus = (status) => {
+    const newToggle = this.#attachReadStatus(status, this.readEventHandler);
+    this.rootElement.replaceChild(newToggle, this.toggleStatusLabel);
+    this.toggleStatusLabel = newToggle;
   };
   render = () => this.rootElement;
 }
@@ -267,7 +306,7 @@ class AddBookFormView {
    * @param {Function} addBook - controller function to call when adding the new book
    */
   acceptButtonHandler(addBook) {
-    this.acceptButton.addEventListener('click', (event) => { 
+    this.acceptButton.addEventListener('click', () => {
       const title = this.newBookFormFields['title'].value;
       const author = this.newBookFormFields['author'].value;
       const pages = this.newBookFormFields['pages'].value;
@@ -283,7 +322,7 @@ class AddBookFormView {
       this.newBookFormFields[field].value = '';
     }
   }
-  
+
   /** Hides the book addition input form. */
   cancelHandler() {
     this._cleanFields();

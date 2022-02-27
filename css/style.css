@@ -1,14 +1,13 @@
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
 :root {
   font-size: 12pt;
 }
 
 html {
   box-sizing: border-box;
-  background-color: rgb(242, 242, 242);
+  background-color: rgba(216, 187, 142, 0.3);
 
-  font-family: 'Lato', sans-serif;
+  font-family: 'Fira Sans Book', sans-serif;
+  line-height: 1.5;
 }
 
 *,
@@ -21,10 +20,10 @@ html {
   position: fixed;
   top: 0px;
   left: 0px;
-  padding: 10px 10px;
+  padding: 10px 20px;
 
   width: 100%;
-  background-color: blanchedalmond;
+  background-color: rgb(216, 187, 142);
 
   box-shadow: 0px 0px 4px 2px grey;
 
@@ -33,49 +32,46 @@ html {
 
 .header__title {
   font-size: 18pt;
-  margin-left: 50px;
+  margin-left: 20px;
 }
 
 .header__button {
   padding: 5px;
   border-radius: 5px;
- 
+
   font-family: inherit;
-  font-size: 12pt;
+  font-size: 16pt;
   border: unset;
 
-  background-color: white;
+  background-color: rgb(231, 220, 179);
 
-  box-shadow: 0px 0px 2px 1px rgb(190, 190, 190);
+  box-shadow: 0px 0px 2px 1px rgb(0, 0, 0);
   float: right;
 }
 
-
 .bookshelf {
-  position: absolute;
-  left: 50%;
-  
-  transform: translate(-50%);
-  
-  width: 70%;
-  max-width: 80%;
+  position: relative;
 
-  height: 800px;
-  width: 70%;
-  max-width: 80%;
-
+  top: 70px;
   display: flex;
   flex-flow: column nowrap;
-  justify-content: center;
+  align-items: center;
+
+  height: 90vh;
+  width: auto;
 }
 
 .bookshelf__main-pane {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 30px;
-  overflow-y: scroll;
+  row-gap: 25px;
+  column-gap: 50px;
+
+  width: 80%;
+
   padding: 5px;
+  margin: 20px;
 }
 
 .bookshelf__navigation-button {
@@ -85,30 +81,79 @@ html {
   font-size: 30pt;
 }
 
-.book {
-  display: flex;
-  flex-flow: column nowrap;
-}
-
 .bookshelf__book {
   position: relative;
-  
+
   background-color: white;
   box-shadow: 0px 0px 7px 2px rgb(190, 190, 190);
-  
+
   border: 2px solid white;
   border-radius: 6px;
 
-  padding: 15px;
+  padding: 25px;
+  font-size: 18pt;
 }
 
-.book__info-entry {
+.book__attribute {
   display: flex;
   flex-flow: row nowrap;
   font-size: inherit;
-  
-  gap: 15px;
-  margin: 0.4em;
+  row-gap: 25px;
+  margin-right: 25px;
+}
+
+.book__attribute_type-key {
+  width: 15em;
+  border-bottom: 3px solid rgba(216, 187, 142, 0.8);
+}
+
+.book__attribute_type-value {
+  width: 90%;
+  border-bottom: 3px solid rgba(216, 187, 142, 0.8);
+  padding-left: 10px;
+}
+
+.book__button-read-toggle {
+  accent-color: rgba(216, 187, 142, 0.6);
+}
+
+.book__button-remove {
+  all: unset;
+  font-family: 'Material Icons';
+  font-size: 27pt;
+
+  color: rgb(0, 0, 0, 0.6);
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.book__button_read {
+  display: inline-flex;
+  flex-flow: row nowrap;
+
+  align-items: center;
+}
+
+.book__button-remove:hover {
+  border-radius: 8px;
+  background-color: rgb(230, 230, 230);
+}
+
+.book__button_read-button {
+  all: unset;
+  font-family: "Material Icons";
+  font-size: 18pt;
+  border: 2px solid rgba(216, 187, 142, 0.9);
+  border-radius: 8px;
+  padding: 2px 6px;
+  background-color: rgb(216, 187, 142);
+}
+
+.book__button_read-label {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 .form {
@@ -131,7 +176,7 @@ html {
   justify-content: center;
 
   padding: 30px 20px;
-  gap: 10px; 
+  gap: 10px;
 }
 
 .form-new-book__parameter {
@@ -139,26 +184,13 @@ html {
   flex-flow: row nowrap;
 }
 
-.form-new-book__parameter_type_label { 
+.form-new-book__parameter_type_label {
   width: 4em;
 }
-
 
 .form__disabled {
   opacity: 0;
   z-index: -1;
-}
-
-.book__button-remove { 
-  all: unset;
-  font-family: 'Material Icons';
-  font-size: 18pt;
-
-  border-radius: 3px;
-}
-
-.book__button-remove:hover {
-  background-color: rgb(230, 230, 230);
 }
 
 .bookshelf__add-new {
