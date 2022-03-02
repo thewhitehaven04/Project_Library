@@ -7,9 +7,9 @@
     <title>Project: Library</title>
     <link rel="stylesheet" href="css/style.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
     <script src="js/script.js" defer></script>
   </head>
-
   <body>
     <header>
       <div class="static-header">
@@ -18,11 +18,6 @@
       </div>
     </header>
     <main>
-      <div>
-        <div class="bookshelf">
-          <div class="bookshelf__main-pane"></div>
-        </div>
-      </div>
       <div class="form form__disabled">
         <div class="form-new-book">
           <div class="form-new-book__parameter">
@@ -34,21 +29,26 @@
             <input type="text" id="author" class="form-new-book__parameter_type_input" />
           </div>
           <div class="form-new-book__parameter">
-            <label for="page-count" class="form-new-book__parameter_type_label">Pages</label>
+            <label for="page-count" class="form-new-book__parameter_type_label">Pages:</label>
             <input type="text" id="page-count" class="form-new-book__parameter_type_input" />
           </div>
           <div class="form-new-book__parameter">
             <label for="year" class="form-new-book__parameter_type_label">Year:</label>
             <input type="text" id="year" class="form-new-book__parameter_type_input" />
           </div>
-          <div class="form-new-book__parameter">
+          <div class="form-new-book__checkbox">
             <label for="read-status" class="form-new-book__parameter_type_label">Read:</label>
-            <input type="checkbox" id="read-status" class="form-new-book__parameter_type_input" />
+            <input type="checkbox" id="read-status" class="form-new-book__parameter_type_checkbox" />
           </div>
           <div class="form-new-book__controls">
             <button type="button" class="form-new-book__button form-new-book__button_type_accept">Accept</button>
             <button type="button" class="form-new-book__button form-new-book__button_type_cancel">Cancel</button>
           </div>
+        </div>
+      </div>
+      <div class="overlay">
+        <div class="bookshelf">
+          <div class="bookshelf__main-pane"></div>
         </div>
       </div>
     </main>

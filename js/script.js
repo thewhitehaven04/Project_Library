@@ -86,6 +86,9 @@ class LibraryView {
     }
   };
 
+  /** Add a rendered book to the library's view.
+   * @param {Book} book - an object that has a `render` method that returns an object of type Element 
+   */
   addBook(book) {
     const renderedBook = book.render();
     this.#addRemoveButtonToBook(renderedBook);
@@ -274,11 +277,13 @@ class BookView {
 
 class AddBookFormView {
   constructor() {
+    this.main = document.querySelector('main');
     this.newBookFormButton = document.querySelector('.header__button_type_add-new');
 
     this.newBookForm = document.querySelector('.form');
     this.newBookFormDisabledClass = 'form__disabled';
     this.newBookFormEnabled = false;
+    this.overlay = document.querySelector('.overlay');
 
     this._newFormOpenerInit(this.newBookFormButton);
 
@@ -296,9 +301,18 @@ class AddBookFormView {
     this.cancelButton.addEventListener('click', (event) => this.cancelHandler());
   }
 
+  applyDarken = () => {
+    this.overlay.classList.add('overlay__darken');
+  }
+  
+  removeDarken = () => {
+    this.overlay.classList.remove('overlay__darken');
+  }
+
   _newFormOpenerInit(button) {
     button.addEventListener('click', () => {
       this.newBookForm.classList.remove(this.newBookFormDisabledClass);
+      this.applyDarken();
     });
   }
 
@@ -327,6 +341,7 @@ class AddBookFormView {
   cancelHandler() {
     this._cleanFields();
     this.newBookForm.classList.add(this.newBookFormDisabledClass);
+    this.removeDarken();
   }
 }
 
