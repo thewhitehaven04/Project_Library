@@ -186,7 +186,7 @@ class BookView {
 
     // Attaches an event handler that binds the book's read status to the value of its model.
     this.readEventHandler = toggleEventHandler;
-    this.toggleStatusLabel = this.#attachReadStatus(bookJSON['status'], toggleEventHandler);
+    this.toggleStatusLabel = this.#attachReadStatus(bookJSON.status, toggleEventHandler);
     this.rootElement.appendChild(this.toggleStatusLabel);
   }
 
@@ -321,11 +321,11 @@ class AddBookFormView {
    */
   acceptButtonHandler(addBook) {
     this.acceptButton.addEventListener('click', () => {
-      const title = this.newBookFormFields['title'].value;
-      const author = this.newBookFormFields['author'].value;
-      const pages = this.newBookFormFields['pages'].value;
-      const year = this.newBookFormFields['year'].value;
-      const status = this.newBookFormFields['status'].checked;
+      const title = this.newBookFormFields.title.value;
+      const author = this.newBookFormFields.author.value;
+      const pages = this.newBookFormFields.pages.value;
+      const year = this.newBookFormFields.year.value;
+      const status = this.newBookFormField.status.checked;
       addBook(title, author, pages, year, status);
     });
   }
